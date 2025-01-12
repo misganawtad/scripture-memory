@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Trash2, Download } from 'lucide-react';
+import { Trash2, Download, Upload } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
@@ -63,33 +63,7 @@ const BibleVerseManager = () => {
       title: verse.packageTitle
     });
   };
-const exportToJson = () => {
-  const dataStr = JSON.stringify(verses, null, 2);
-  const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-  
-  const exportFileDefaultName = 'bible-verses.json';
-  
-  const linkElement = document.createElement('a');
-  linkElement.setAttribute('href', dataUri);
-  linkElement.setAttribute('download', exportFileDefaultName);
-  linkElement.click();
-};
 
-const importJson = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const importedVerses = JSON.parse(e.target.result);
-        setVerses(importedVerses);
-      } catch (error) {
-        alert('Error reading JSON file');
-      }
-    };
-    reader.readAsText(file);
-  }
-};
   const exportToPDF = async () => {
     if (contentRef.current) {
       const deleteButtons = contentRef.current.querySelectorAll('.delete-button');
@@ -111,34 +85,65 @@ const importJson = (event) => {
     }
   };
 
+  const exportToJson = () => {
+    const dataStr = JSON.stringify(verses, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = 'bible-verses.json';
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
+
+  const importJson = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const importedVerses = JSON.parse(e.target.result);
+          setVerses(importedVerses);
+        } catch (error) {
+          alert('Error reading JSON file');
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-2">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Bible Verse Manager</h1>
         {verses.length > 0 && (
-          <button
-            onClick={exportToPDF}
-            className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-          >
-            <Download size={16} />
-            Export to PDF
-          </button>
-         <button
-        onClick={exportToJson}
-        className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-      >
-        <Download size={16} />
-        Export JSON
-      </button>
-      <label className="flex items-center gap-2 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 cursor-pointer">
-        <input
-          type="file"
-          accept=".json"
-          onChange={importJson}
-          className="hidden"
-        />
-        Import JSON
-      </label>
+          <div className="flex gap-2">
+            <button
+              onClick={exportToPDF}
+              className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+            >
+              <Download size={16} />
+              Export to PDF
+            </button>
+            <button
+              onClick={exportToJson}
+              className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              <Download size={16} />
+              Export JSON
+            </button>
+            <label className="flex items-center gap-2 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 cursor-pointer">
+              <Upload size={16} />
+              <input
+                type="file"
+                accept=".json"
+                onChange={importJson}
+                className="hidden"
+              />
+              Import JSON
+            </label>
+          </div>
         )}
       </div>
 
