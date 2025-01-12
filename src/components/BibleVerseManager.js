@@ -63,7 +63,33 @@ const BibleVerseManager = () => {
       title: verse.packageTitle
     });
   };
+const exportToJson = () => {
+  const dataStr = JSON.stringify(verses, null, 2);
+  const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+  
+  const exportFileDefaultName = 'bible-verses.json';
+  
+  const linkElement = document.createElement('a');
+  linkElement.setAttribute('href', dataUri);
+  linkElement.setAttribute('download', exportFileDefaultName);
+  linkElement.click();
+};
 
+const importJson = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedVerses = JSON.parse(e.target.result);
+        setVerses(importedVerses);
+      } catch (error) {
+        alert('Error reading JSON file');
+      }
+    };
+    reader.readAsText(file);
+  }
+};
   const exportToPDF = async () => {
     if (contentRef.current) {
       const deleteButtons = contentRef.current.querySelectorAll('.delete-button');
@@ -97,6 +123,22 @@ const BibleVerseManager = () => {
             <Download size={16} />
             Export to PDF
           </button>
+         <button
+        onClick={exportToJson}
+        className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+      >
+        <Download size={16} />
+        Export JSON
+      </button>
+      <label className="flex items-center gap-2 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 cursor-pointer">
+        <input
+          type="file"
+          accept=".json"
+          onChange={importJson}
+          className="hidden"
+        />
+        Import JSON
+      </label>
         )}
       </div>
 
